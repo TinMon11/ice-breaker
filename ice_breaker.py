@@ -1,8 +1,9 @@
 from langchain.prompts.prompt import PromptTemplate
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
-from thrid_parties import linkedin_lookup_agent
+from thrid_parties import linkedin_lookup_agent, twitter_lookup_agent
 from thrid_parties.linkedin import scrape_linkedin_profile
+from tools.tools import get_recent_twitter_posts
 
 load_dotenv()
 
@@ -11,14 +12,21 @@ def ice_breaker_with(name: str) -> str:
     linkedin_user_name = linkedin_lookup_agent.lookup(name)
     linkedin_profile_data = scrape_linkedin_profile(linkedin_user_name)
 
+    twitter_user_name = twitter_lookup_agent.lookup(name)
+    twitter_profile_data = get_recent_twitter_posts(twitter_user_name)
+
     summary_template = """
-    Given the information {information} about a person, I want you to create:
+    Given the information {information} about a person from LinkedIn,
+    and the latest tweet posts {twitter_profile_data} about them,
+    I want you to create:
     - A short summary
     - Two interesting facts about them
+    - A ice breaker question
     """
 
     summary_prompt_template = PromptTemplate(
-        input_variables=["information"], template=summary_template
+        input_variables=["information", "twitter_profile_data"],
+        template=summary_template,
     )
 
     llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
@@ -27,7 +35,12 @@ def ice_breaker_with(name: str) -> str:
 
     linkedin_profile_data = scrape_linkedin_profile("eden_marko")
 
-    result = chain.invoke({"information": linkedin_profile_data})
+    result = chain.invoke(
+        {
+            "information": linkedin_profile_data,
+            "twitter_profile_data": twitter_profile_data,
+        }
+    )
 
     print(result.content)
 

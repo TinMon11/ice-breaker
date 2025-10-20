@@ -13,41 +13,40 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from tools.tools import get_profile_url
-
 from langchain import hub
 
 load_dotenv()
 
 def lookup(name: str) -> str:
     """
-    Lookup a person's LinkedIn profile URL
+    Lookup a person's Twitter profile URL
     Args:
         name: The name of the person
     Returns:
-        The LinkedIn profile URL or an error message
+        The Twitter profile URL or an error message
     """
 
     llm_model = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
 
     template = """
-    Given the full name of {name_of_person} I want you to get their LinkedIn profile URL.
-    Your answer should only contain a URL.
-    Call the function get_profile_url with the name of the person and the platform "linkedin" to get the LinkedIn profile URL.
-    Example: https://www.linkedin.com/in/john-doe-1234567890/
+    Given the full name of {name_of_person} I want you to get the link to his Twitter profile.
+    Your answer should only contain the username of the Twitter profile.
+    Call the function get_profile_url with the name of the person and the platform "twitter" to get the Twitter profile URL.
+    Example: @elonmusk
     """
 
     prompt_template = PromptTemplate(
         input_variables=["name_of_person"], template=template
     )
 
-    def get_linkedin_profile(name_of_person: str) -> str:
-        return get_profile_url(name_of_person, "linkedin")
+    def get_twitter_profile(name_of_person: str) -> str:
+        return get_profile_url(name_of_person, "twitter")
 
     tools_for_agent = [
         Tool(
-            name="Crawl Google 4 linkedin profile",
-            func=get_linkedin_profile,
-            description="Useful for any time you need to find someone's LinkedIn profile URL",
+            name="Crawl Google 4 Twitter profile",
+            func=get_twitter_profile,
+            description="Useful for any time you need to find someone's Twitter profile URL",
         )
     ]
 
