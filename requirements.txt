@@ -7,3 +7,4 @@ typing
 chromadb
 langchain_chroma
 requests
+langchain_tavily

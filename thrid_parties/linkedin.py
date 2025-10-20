@@ -17,6 +17,7 @@ def scrape_linkedin_profile(user_name: str):
     Returns:
         A dictionary containing the scraped information
     """
+    print("Scraping LinkedIn profile for", user_name)
 
     response = requests.get(linkedin_profile_url, timeout=10)
     if response.status_code != 200:
